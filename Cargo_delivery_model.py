@@ -190,12 +190,12 @@ loader_1 = AutoLoader(model='Bobcat', bucket_capacity=1000, warehouse=moscow, ro
 loader_2 = AutoLoader(model='Lonking', bucket_capacity=500, warehouse=piter, role='unloader')
 
 trucks = []
-for number in range(5):
-    truck = Truck(model='КАМАЗ #{}'.format(number), body_space=5000)
+for number in range(1, 6):
+    truck = Truck(model='КАМАЗ №{}'.format(number), body_space=5000)
     moscow.truck_arrived(truck)
     trucks.append(truck)
-for number in range(5):
-    truck = OtherTruck(model='Volvo #{}'.format(number), body_space=10000)
+for number in range(1, 6):
+    truck = OtherTruck(model='Volvo №{}'.format(number), body_space=10000)
     moscow.truck_arrived(truck)
     trucks.append(truck)
 
@@ -215,7 +215,6 @@ while piter.content < TOTAL_CARGO:
     cprint(loader_2, color='cyan')
     cprint(moscow, color='cyan')
     cprint(piter, color='cyan')
-
 
 cprint('Всего затрачено топлива {}'.format(Vehicle.total_fuel), color='yellow')
 cprint('Общий простой грузовиков {}'.format(Truck.dead_time), color='yellow')
