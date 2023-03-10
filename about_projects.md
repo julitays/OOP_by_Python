@@ -1,4 +1,4 @@
-# OOP_by_Python
-My Python projects using OOP
+# Проекты с использованием ООП на Питоне
+
 
 1. Human. 365 days of life.
