@@ -12,26 +12,36 @@ class Road:
 
 class Warehouse:
 
-    def __init__(self, name, content):
-        pass
+    def __init__(self, name, content=0):
+        self.name = name
+        self.content = content
+        self.road_out = None
+        self.queue_in = []
+        self.queue_out = []
 
     def __str__(self):
-        pass
+        return 'Склад {} груза {}'.format(self.name, self.content)
 
     def set_road_out(self, road):
-        pass
+        self.road_out = road
 
-    def truck_arrived(self, ):
-        pass
+    def truck_arrived(self, truck):
+        self.queue_in.append(truck)
+        print('{} прибыл грузовик {}'.format(self.name, truck))
 
     def get_next_truck(self):
-        pass
+        if self.queue_in:
+            truck = self.queue_in.pop()
+            return truck
 
     def truck_ready(self, truck):
-        pass
+        self.queue_out.append(truck)
+        print('{} грузовик готов {}'.format(self.name, truck))
 
     def act(self):
-        pass
+        while self.queue_out:
+            truck = self.queue_out.pop()
+            truck.go_to(road=self.road_out)
 
 
 class Vehicle:
@@ -46,6 +56,7 @@ class Vehicle:
 
     def tank_up(self):
         self.fuel += 1000
+        return '{} заправился'.format(self.model)
 
 
 class Truck(Vehicle):
@@ -65,8 +76,11 @@ class Truck(Vehicle):
     def ride(self):
         if self.distance_to_target > self.velocity:
             self.distance_to_target = self.velocity
-        print('{} едет по дороге, осталось {}'.format(self.model, self.distance_to_target))
-
+            print('{} едет по дороге, осталось {}'.format(self.model, self.distance_to_target))
+        else:
+            self.place = self.place.end
+            self.place.truck_arrived()
+            print('{} доехал'.format(self.model))
     def go_to(self, road):
         self.place = road
         self.distance_to_target = road.distance
@@ -75,7 +89,7 @@ class Truck(Vehicle):
     def act(self):
         if self.fuel <= 10:
             self.tank_up()
-        elif isinstance(self.place, Road)
+        elif isinstance(self.place, Road):
             self.ride()
 
 
@@ -97,19 +111,24 @@ class AutoLoader(Vehicle):
             self.tank_up()
         elif self.truck is None:
             self.truck = self.warehouse.get_next_truck()
-        elif self.role == 'loader'
+        elif self.role == 'loader':
             self.load()
         else:
             self.unload()
 
     def load(self):
-        truck_cargo_rest  = self.truck.body_space - self.truck.cargo
-        if truck_cargo_rest>= self.bucket_capacity:
+        truck_cargo_rest = self.truck.body_space - self.truck.cargo
+        if truck_cargo_rest >= self.bucket_capacity:
             self.warehouse.content -= self.bucket_capacity
             self.truck.cargo += self.bucket_capacity
         else:
             self.warehouse.content -= truck_cargo_rest
             self.truck.cargo += truck_cargo_rest
+
+        if self.truck.cargo == self.truck.body_space:
+            self.warehouse.truck_ready(self.truck)
+            self.truck = None
+
     def unload(self):
         if self.truck.cargo >= self.bucket_capacity:
             self.truck.cargo -= self.bucket_capacity
@@ -117,6 +136,10 @@ class AutoLoader(Vehicle):
         else:
             self.truck.cargo -= self.truck.cargo
             self.warehouse.content += self.truck.cargo
+
+        if self.truck.cargo == 0:
+            self.warehouse.truck_ready(self.truck)
+            self.truck = None
 
 
 TOTAL_CARGO = 100000
