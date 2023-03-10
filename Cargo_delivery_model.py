@@ -82,19 +82,41 @@ class Truck(Vehicle):
 class AutoLoader(Vehicle):
 
     def __init__(self, model, bucket_capacity, warehouse=None, role='loader'):
-        pass
+        super().__init__(model=model)
+        self.bucket_capacity = bucket_capacity
+        self.warehouse = warehouse
+        self.role = role
+        self.truck = None
 
     def __str__(self):
-        pass
+        res = super().__str__()
+        return res + 'грузим {}'.format(self.truck)
 
     def act(self):
-        pass
+        if self.fuel <= 10:
+            self.tank_up()
+        elif self.truck is None:
+            self.truck = self.warehouse.get_next_truck()
+        elif self.role == 'loader'
+            self.load()
+        else:
+            self.unload()
 
     def load(self):
-        pass
-
+        truck_cargo_rest  = self.truck.body_space - self.truck.cargo
+        if truck_cargo_rest>= self.bucket_capacity:
+            self.warehouse.content -= self.bucket_capacity
+            self.truck.cargo += self.bucket_capacity
+        else:
+            self.warehouse.content -= truck_cargo_rest
+            self.truck.cargo += truck_cargo_rest
     def unload(self):
-        pass
+        if self.truck.cargo >= self.bucket_capacity:
+            self.truck.cargo -= self.bucket_capacity
+            self.warehouse.content += self.bucket_capacity
+        else:
+            self.truck.cargo -= self.truck.cargo
+            self.warehouse.content += self.truck.cargo
 
 
 TOTAL_CARGO = 100000
